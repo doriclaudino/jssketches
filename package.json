@@ -1,0 +1,27 @@
+{
+  "name": "jssketches",
+  "version": "1.0.0",
+  "description": "list of sketches using p5.js",
+  "main": "./src/index.html",
+  "scripts": {
+    "start": "live-server ./src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/doriclaudino/jssketches.git"
+  },
+  "keywords": [
+    "js",
+    "javascript",
+    "p5js"
+  ],
+  "author": "dori claudino",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/doriclaudino/jssketchesissues"
+  },
+  "homepage": "https://github.com/doriclaudino/jssketches",
+  "devDependencies": {
+    "live-server": "^1.2.1"
+  }
+}
