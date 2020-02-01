@@ -1,2 +1,6 @@
 node_modules
 package-lock.json
+src/*/*.webm
+src/*/*.webm.gif
+src/*/*.webm.mp4
+src/*/*.webm.png

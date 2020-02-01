@@ -4,7 +4,12 @@
   "description": "list of sketches using p5.js",
   "main": "./src/index.html",
   "scripts": {
-    "start": "live-server ./src/"
+    "start": "live-server ./src/",
+    "generatePalette": "npm run ffmpeg generatePalette",
+    "generateGif": "npm run ffmpeg generateGif",
+    "generateMp4": "npm run ffmpeg generateMp4",
+    "build": "npm run ffmpeg generateAll",
+    "ffmpeg": "node ./src/cmd/exec_ffmpeg.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +27,8 @@
   },
   "homepage": "https://github.com/doriclaudino/jssketches",
   "devDependencies": {
+    "child_process": "^1.0.2",
+    "hasbin": "^1.2.3",
     "live-server": "^1.2.1"
   }
 }
