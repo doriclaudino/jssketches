@@ -1,50 +1,117 @@
 let colors = {
-  purple: "#5A18C9",
-  orange: "#FC7307",
-  green: "#98CA32",
-  brown: "#341C09",
-  strangeOrange: "#FE2712",
-  mustard: "#F3A914",
-  niceRed: "#E34C43"
-};
-
-let isRecording = false;
-
-function setup() {
-  createCanvas(1080, 1080);
-  background(colors.mustard);
-  //noLoop();
-  angleMode(DEGREES);
-}
-
-let initialRotations = [0, 60, 120, 180, 240, 300],
+    purple: "#5A18C9",
+    orange: "#FC7307",
+    green: "#98CA32",
+    brown: "#341C09",
+    strangeOrange: "#FE2712",
+    mustard: "#F3A914",
+    niceRed: "#E34C43"
+  },
+  rotationSpeedSlider,
+  rotationSpeedP,
+  containerId = 'flex-container',
+  container,
+  rotationSpeedSliderPanel = 0,
+  rotationSpeedPPanel = 0,
+  initialRotations = [0, 60, 120, 180, 240, 300],
   starRotation = 0,
   panelRotation = 0,
-  startvel = 0.2;
+  size = 0,
+  color1 = colors.mustard,
+  color2 = colors.brown,
+  color3 = colors.niceRed,
+  colorPicker1,
+  colorPicker2,
+  colorPicker3,
+  speed1,
+  speed2;
+
+function setup() {
+  createCanvas(720, 720);
+
+  frameRate(60)
+  angleMode(DEGREES);
+
+  container = createDiv();
+  container.attribute('id', containerId);
+  container.class('flex-container');
+
+  colorPicker2 = createColorPicker(color2);
+  colorPicker1 = createColorPicker(color1);
+  colorPicker3 = createColorPicker(color3);
+
+  /** should be relative from frameRate?*/
+  rotationSpeedSlider = createSlider(-1, 1, 0.5, 0.0001);
+  rotationSpeedSlider.class('fourtyPercent');
+  rotationSpeedP = createP(`${rotationSpeedSlider.value()} rotation speed`)
+  rotationSpeedSlider.parent(container);
+  rotationSpeedP.parent(container);
+
+
+  rotationSpeedSliderPanel = createSlider(-1, 1, 0, 0.0001);
+  rotationSpeedSliderPanel.class('fourtyPercent');
+  rotationSpeedPPanel = createP(`${rotationSpeedSliderPanel.value()} rotation speed`)
+  rotationSpeedSliderPanel.parent(container);
+  rotationSpeedPPanel.parent(container);
+
+
+}
+
+const getSpeedStats = (value) => `${value}speed ${toFrameRate(value,2)}°/frame  ${toSeconds(value,2)}°/s`
+const toSeconds = (value, decimals) => decimals ? (toFrameRate(value) * 60).toFixed(decimals) : toFrameRate(value) * 60
+const toFrameRate = (value, decimals) => decimals ? (value / getFrameRate()).toFixed(decimals) : value / getFrameRate()
+
 
 function draw() {
-  if (starRotation === 0 && !isRecording) {
-    btn.click();
-    isRecording = true;
-  }
-  if (starRotation >= 180 && isRecording) {
-    btn.click();
-    noLoop();
-  }
+
+  /** update colors */
+  color1 = colorPicker1.value()
+  color2 = colorPicker2.value()
+  color3 = colorPicker3.value()
+
+  speed1 = rotationSpeedSlider.value()
+  speed2 = rotationSpeedSliderPanel.value()
+
+  /** resize panels on background twices bigger than canvas */
+  size = height * 2
+
+  /** update texts */
+  rotationSpeedP.elt.innerText = getSpeedStats(speed1)
+  rotationSpeedPPanel.elt.innerText = getSpeedStats(speed2)
+
+  /** move everything on center of our canva */
   translate(width / 2, height / 2);
-  leftPanel(panelRotation, colors.niceRed);
-  topPanelLeft(panelRotation, colors.mustard);
-  topPanelRight(panelRotation, colors.mustard);
-  rightPanel(panelRotation, colors.brown);
-  diamond(60, 60, colors.niceRed, initialRotations[0] + starRotation);
-  diamond(60, 60, colors.brown, initialRotations[1] + starRotation);
-  diamond(60, 60, colors.mustard, initialRotations[2] + starRotation);
-  diamond(60, 60, colors.niceRed, initialRotations[3] + starRotation);
-  diamond(60, 60, colors.brown, initialRotations[4] + starRotation);
-  diamond(60, 60, colors.mustard, initialRotations[5] + starRotation);
-  starRotation += startvel;
-  //panelRotation -= 0.1;
+
+  /** create a square to keep rotate kinda background */
+  backgroundSquare(size, panelRotation, color1);
+
+  /** add our left/right panels*/
+  leftPanel(size, panelRotation, color3);
+  rightPanel(size, panelRotation, color2);
+
+
+  /** diamonds on center */
+  diamond(60, 60, color3, initialRotations[0] + starRotation);
+  diamond(60, 60, color2, initialRotations[1] + starRotation);
+  diamond(60, 60, color1, initialRotations[2] + starRotation);
+  diamond(60, 60, color3, initialRotations[3] + starRotation);
+  diamond(60, 60, color2, initialRotations[4] + starRotation);
+  diamond(60, 60, color1, initialRotations[5] + starRotation);
+
+  /** update speed every frame */
+  starRotation += speed1;
+  panelRotation += speed2;
 }
+
+const backgroundSquare = (size, rotation, color = colors.purple) => {
+  push();
+  rectMode(CENTER);
+  rotate(rotation);
+  fill(color);
+  noStroke();
+  rect(0, 0, size, size);
+  pop();
+};
 
 const diamond = (angle, base, color, rotation) => {
   push();
@@ -64,16 +131,16 @@ const diamond = (angle, base, color, rotation) => {
   pop();
 };
 
-const rightPanel = (rotation = 0, color = colors.green) => {
-  panel(color, rotation, true);
+const rightPanel = (size, rotation = 0, color = colors.green) => {
+  panel(size, color, rotation, true);
 };
 
-const leftPanel = (rotation = 0, color = colors.orange) => {
-  panel(color, rotation);
+const leftPanel = (size, rotation = 0, color = colors.orange) => {
+  panel(size, color, rotation);
 };
 
-const panel = (color, rotation, flip = false) => {
-  let altura = tangHeight();
+const panel = (size, color, rotation, flip = false) => {
+  let altura = tangHeight(size / 2);
   push();
   rotate(rotation);
   fill(color);
@@ -81,11 +148,14 @@ const panel = (color, rotation, flip = false) => {
   quad(
     0,
     0,
+
     0,
-    height / 2,
-    flip ? height / 2 : height / -2,
-    height / 2,
-    flip ? height / 2 : height / -2,
+    size / 2,
+
+    flip ? size / 2 : size / -2,
+    size / 2,
+
+    flip ? size / 2 : size / -2,
     -altura
   );
   pop();
@@ -96,31 +166,4 @@ const tangHeight = (base = height / 2, angle = 30) => {
   let tan = Math.tan(rad);
   let altura = tan * base;
   return altura;
-};
-
-const topPanelLeft = (rotation = 0, color = colors.purple) => {
-  push();
-  fill(color);
-  rotate(rotation);
-  noStroke();
-  quad(
-    0,
-    0,
-    height / -2,
-    -tangHeight(),
-    height / -2,
-    height / -2,
-    0,
-    height / -2
-  );
-  pop();
-};
-
-const topPanelRight = (rotation = 0, color = colors.purple) => {
-  push();
-  rotate(rotation);
-  fill(color);
-  noStroke();
-  quad(0, 0, 0, height / -2, height, height / -2, height, -tangHeight());
-  pop();
 };
